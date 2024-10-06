@@ -3,6 +3,7 @@
 
 # Ignore all files in any directory called "data"
 **/data/
+**/santander/
 
 
 ### Python ###
