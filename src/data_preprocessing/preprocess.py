@@ -1,33 +1,23 @@
 import pandas as pd
 
+from src.data_preprocessing.data_obj import Data
+
 
 class Preprocessor:
-    def __init__(self, df: pd.DataFrame, target_col_name: str):
-        self._target = df[target_col_name]
-        self._features = df.drop(target_col_name, axis=1)
-
-    @property
-    def features(self):
-        return self._features
-
-    @property
-    def target(self):
-        return self._target
+    def __init__(self, train_name, test_name, target_col="TARGET"):
+        self.train = Data(train_name, target_col)
+        self.test = Data(test_name)
 
     def remove_zero_variance_columns(self):
         selected_col = []
-        for col_name in self._features.columns:
-            self.add_non_zero_variance_col(selected_col, col_name)
-        return self._features[selected_col]
+        for col_name in self.train._features.columns:
+            self.add_zero_variance_col(selected_col, col_name)
+        self.train.remove_columns(selected_col)
+        self.test.remove_columns(selected_col)
 
-    def add_non_zero_variance_col(self, selected_col, col_name):
+    def add_zero_variance_col(self, selected_col, col_name):
         col = self._features[col_name]
-        if col.var() != 0:
+        if col.var() == 0:
             return selected_col.append(col_name)
         else:
             return selected_col
-
-
-Preprocessor(
-    df=pd.read_csv("data/train.csv"), target_col_name="TARGET"
-).remove_zero_variance_columns()
