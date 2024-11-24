@@ -40,6 +40,11 @@ class Data:
     def remove_columns(self, col_names: list):
         self._features = self._features.drop(columns=col_names)
 
+    def get_class_samples(self):
+        pos_samples = self._features[self._target == 1]
+        neg_samples = self._features[self._target == 0]
+        return pos_samples, neg_samples
+
     def load_data(name):
         dir_ = Data.dir_ + name
         if name.endswith("csv"):
