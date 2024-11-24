@@ -2,6 +2,8 @@ import pandas as pd
 
 
 class Data:
+    dir_ = "data"
+
     def __init__(
         self,
         df: pd.DataFrame = None,
@@ -28,20 +30,24 @@ class Data:
     def target(self):
         return self._target
 
-    def load_data(name):
-        dir = rf"data/{name}"
-        if name.endswith("csv"):
-            return pd.read_csv(dir)
-        else:
-            return pd.read_pickle(dir)
-
-    def save_data(self, name):
+    def concat_features_target(self):
         if self._target is None:
             df = self._features
         else:
             df = pd.concat([self._features, self._target], axis=1)
-        dir = f"data/{name}"
-        if name.endswith(".csv"):
-            return df.to_csv(dir)
+        return df
+
+    def load_data(name):
+        dir_ = Data.dir_ + name
+        if name.endswith("csv"):
+            return pd.read_csv(dir_)
         else:
-            return df.to_pickle(dir)
+            return pd.read_pickle(dir_)
+
+    def save_data(self, name):
+        dir_ = Data.dir_ + name
+        df = self.concat_features_target()
+        if name.endswith(".csv"):
+            return df.to_csv(dir_)
+        else:
+            return df.to_pickle(dir_)
