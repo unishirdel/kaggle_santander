@@ -12,6 +12,7 @@ class Data:
             self._df = self.load_data(name)
         else:
             self._df = df
+
         if target_col_name is not None:
             self._target = self._df[target_col_name]
             self._features = self._df.drop(target_col_name, axis=1)
@@ -33,3 +34,14 @@ class Data:
             return pd.read_csv(dir)
         else:
             return pd.read_pickle(dir)
+
+    def save_data(self, name):
+        if self._target is None:
+            df = self._features
+        else:
+            df = pd.concat([self._features, self._target], axis=1)
+        dir = f"data/{name}"
+        if name.endswith(".csv"):
+            return df.to_csv(dir)
+        else:
+            return df.to_pickle(dir)
