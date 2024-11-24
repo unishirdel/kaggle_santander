@@ -37,6 +37,9 @@ class Data:
             df = pd.concat([self._features, self._target], axis=1)
         return df
 
+    def remove_columns(self, col_names: list):
+        self._features = self._features.drop(columns=col_names)
+
     def load_data(name):
         dir_ = Data.dir_ + name
         if name.endswith("csv"):
