@@ -2,10 +2,46 @@ import pandas as pd
 from data_obj import Data
 
 
+# TODO handle nan values of numeric columns with other methods instead of median
+# TODO when test set is not separated and is supposed to be splitted from dataset
 class Preprocessor:
     def __init__(self, train_name, test_name, target_col="TARGET"):
         self.train = Data(df=None, name=train_name, target_col_name=target_col)
         self.test = Data(df=None, name=test_name)
+
+    def handle_nan(self, nan_threshold=None):
+        numeric_columns = self.train.numeric_columns
+        columns_to_keep, removed_columns_info = self.remove_high_nan_features(
+            nan_threshold
+        )
+
+        for column in columns_to_keep:
+            if self.train._features[column].isnull().any():
+                nan_indices = self.train._features[
+                    self.train._features[column].isna()
+                ].index.tolist()
+                median_value = self.train._features[column].median()
+                self.train.set_value(column, nan_indices, median_value)
+
+        return removed_columns_info
+
+    def remove_high_nan_features(self, nan_threshold=None):
+        columns = self.train._features.columns
+        nan_proportions = self.train._features.isna().mean()
+        if nan_threshold is not None:
+            columns_to_remove = nan_proportions[nan_proportions > nan_threshold].index
+            columns_to_keep = nan_proportions[nan_proportions <= nan_threshold].index
+        else:
+            columns_to_remove = []
+            columns_to_keep = columns
+        self.train.remove_columns(columns_to_remove)
+        removed_columns_info = pd.DataFrame(
+            {
+                "column": columns_to_remove,
+                "nan_proportion": nan_proportions[columns_to_remove],
+            }
+        )
+        return columns_to_keep, removed_columns_info
 
     def remove_zero_variance_columns(self):
         no_variance_col = []

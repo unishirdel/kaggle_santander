@@ -61,16 +61,19 @@ class Data:
 
     def get_columns_data_type(self):
         columns_data_type = {}
-        columns_data_type["numeric"] = self._features.select_dtypes(
+        columns_data_type["numeric_columns"] = self._features.select_dtypes(
             include=["number"]
         ).columns.tolist()
-        columns_data_type["boolean"] = self._features.select_dtypes(
+        columns_data_type["boolean_columns"] = self._features.select_dtypes(
             include=["bool"]
         ).columns.tolist()
-        columns_data_type["categorical"] = self._features.select_dtypes(
+        columns_data_type["categorical_columns"] = self._features.select_dtypes(
             include=["object"]
         ).columns.tolist()
         return columns_data_type
+
+    def set_value(self, column_name, index, value):
+        self._features[column_name].loc[index] = value
 
     def load_data(self, name):
         dir_ = Data.dir_ + "/" + name
