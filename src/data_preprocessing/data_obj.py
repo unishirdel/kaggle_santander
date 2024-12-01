@@ -1,6 +1,7 @@
 import pandas as pd
 
 
+# TODO how to make the attributes created by set_attribute function private
 class Data:
     dir_ = "data"
 
@@ -28,6 +29,9 @@ class Data:
             self._features = self._df.copy()
             self._features = self._df.drop(id_columns, axis=1)
 
+        columns_data_type = self.get_columns_data_type()
+        self.set_attributes(columns_data_type)
+
     @property
     def features(self):
         return self._features
@@ -35,6 +39,10 @@ class Data:
     @property
     def target(self):
         return self._target
+
+    def set_attributes(self, dictionary):
+        for key, value in dictionary.items():
+            setattr(self, key, value)
 
     def concat_features_target(self):
         if self._target is None:
@@ -50,6 +58,19 @@ class Data:
         pos_samples = self._features[self._target == 1]
         neg_samples = self._features[self._target == 0]
         return pos_samples, neg_samples
+
+    def get_columns_data_type(self):
+        columns_data_type = {}
+        columns_data_type["numeric"] = self._features.select_dtypes(
+            include=["number"]
+        ).columns.tolist()
+        columns_data_type["boolean"] = self._features.select_dtypes(
+            include=["bool"]
+        ).columns.tolist()
+        columns_data_type["categorical"] = self._features.select_dtypes(
+            include=["object"]
+        ).columns.tolist()
+        return columns_data_type
 
     def load_data(self, name):
         dir_ = Data.dir_ + "/" + name

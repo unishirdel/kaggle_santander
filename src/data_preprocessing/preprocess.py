@@ -45,13 +45,3 @@ class Preprocessor:
             no_var_val = feature[target == cl].iloc[0]
             dic[col_name] = (no_var_val, cl)
         return dic
-
-
-data = Preprocessor("train.csv", "test.csv")
-data.remove_zero_variance_columns()
-dic = data.store_class_zero_variance_cols()
-train = data.train._features
-for col_name in dic:
-    print(dic[col_name])
-    col = train[col_name]
-    print(col_name, col.unique(), dic[col_name][0])
