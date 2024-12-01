@@ -45,15 +45,15 @@ class Data:
         neg_samples = self._features[self._target == 0]
         return pos_samples, neg_samples
 
-    def load_data(name):
-        dir_ = Data.dir_ + name
+    def load_data(self, name):
+        dir_ = Data.dir_ + "/" + name
         if name.endswith("csv"):
             return pd.read_csv(dir_)
         else:
             return pd.read_pickle(dir_)
 
     def save_data(self, name):
-        dir_ = Data.dir_ + name
+        dir_ = Data.dir_ + "/" + name
         df = self.concat_features_target()
         if name.endswith(".csv"):
             return df.to_csv(dir_)
