@@ -2,11 +2,11 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
-from data_preprocessing.data_obj import Data
+from src.data_preprocessing.data_obj import Data
 
 
-def remove_correlated_features(train_obj: Data, test_obj: Data):
-    groups = identify_correlated_groups(train_obj._features, threshold=0.9)
+def remove_correlated_features(train_obj: Data, test_obj: Data, threshold):
+    groups = identify_correlated_groups(train_obj._features, threshold=threshold)
     non_representative_features = find_non_representative_features(
         train_obj._features, groups
     )
