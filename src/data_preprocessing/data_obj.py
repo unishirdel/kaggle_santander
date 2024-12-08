@@ -76,6 +76,11 @@ class Data:
     def set_value(self, column_name, index, value):
         self._features.loc[index, column_name] = value
 
+    def transform_numeric_columns(self, transformer):
+        self._features[self.numeric_columns] = transformer.transform(
+            self._features[self.numeric_columns]
+        )
+
     def load_data(self, name):
         dir_ = Data.dir_ + "/" + name
         if name.endswith("csv"):
