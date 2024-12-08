@@ -4,17 +4,23 @@ from data_obj import Data
 
 # TODO handle nan values of numeric columns with other methods instead of median
 # TODO when test set is not separated and is supposed to be splitted from dataset
+# TODO create modules for each method
+# TODO Handling categorical nan value (eiher by new category or by making prediction for the categories of these samples)
 class Preprocessor:
     def __init__(self, train_name, test_name, target_col="TARGET"):
         self.train = Data(df=None, name=train_name, target_col_name=target_col)
         self.test = Data(df=None, name=test_name)
 
     def handle_nan(self, nan_threshold=None):
+        removed_columns_info = self.handle_nan_numeric_columns(nan_threshold)
+
+        return removed_columns_info
+
+    def handle_nan_numeric_columns(self, nan_threshold=None):
         numeric_columns = self.train.numeric_columns
         columns_to_keep, removed_columns_info = self.remove_high_nan_features(
-            nan_threshold
+            numeric_columns, nan_threshold
         )
-
         for column in columns_to_keep:
             if self.train._features[column].isnull().any():
                 nan_indices = self.train._features[
@@ -22,11 +28,11 @@ class Preprocessor:
                 ].index.tolist()
                 median_value = self.train._features[column].median()
                 self.train.set_value(column, nan_indices, median_value)
-
         return removed_columns_info
 
-    def remove_high_nan_features(self, nan_threshold=None):
-        columns = self.train._features.columns
+    def remove_high_nan_features(self, columns=None, nan_threshold=None):
+        if columns is None:
+            columns = self.train._features.columns
         nan_proportions = self.train._features.isna().mean()
         if nan_threshold is not None:
             columns_to_remove = nan_proportions[nan_proportions > nan_threshold].index
@@ -41,6 +47,7 @@ class Preprocessor:
                 "nan_proportion": nan_proportions[columns_to_remove],
             }
         )
+        remove_zero_variance_columns(self)
         return columns_to_keep, removed_columns_info
 
     def remove_zero_variance_columns(self):
@@ -81,3 +88,7 @@ class Preprocessor:
             no_var_val = feature[target == cl].iloc[0]
             dic[col_name] = (no_var_val, cl)
         return dic
+
+
+def remove_zero_variance_columns(obj):
+    pass
