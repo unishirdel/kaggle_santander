@@ -20,25 +20,15 @@ def handle_nan_numeric_columns(train_obj, test_obj, nan_threshold=None):
     )
     for column in columns_to_keep:
         median_value = train_obj._features[column].median()
-        if train_obj._features[column].isnull().any():
-            nan_indices = train_obj._features[
-                train_obj._features[column].isna()
-            ].index.tolist()
-            train_obj.set_value(column, nan_indices, median_value)
-        handle_nan_numeric_columns_test(test_obj, median_value)
+        set_nan_numeric_columns(train_obj, column, median_value)
+        set_nan_numeric_columns(test_obj, column, median_value)
     return removed_columns_info
 
 
 def remove_high_nan_features(train_obj, test_obj, columns=None, nan_threshold=None):
-    if columns is None:
-        columns = train_obj._features.columns
-    nan_proportions = train_obj._features.isna().mean()
-    if nan_threshold is not None:
-        columns_to_remove = nan_proportions[nan_proportions > nan_threshold].index
-        columns_to_keep = nan_proportions[nan_proportions <= nan_threshold].index
-    else:
-        columns_to_remove = []
-        columns_to_keep = columns
+    columns_to_keep, columns_to_remove, nan_proportions = find_columns_to_remove(
+        train_obj, columns, nan_threshold
+    )
     train_obj.remove_columns(columns_to_remove)
     test_obj.remove_columns(columns_to_remove)
     removed_columns_info = pd.DataFrame(
@@ -50,9 +40,22 @@ def remove_high_nan_features(train_obj, test_obj, columns=None, nan_threshold=No
     return columns_to_keep, removed_columns_info
 
 
-def handle_nan_numeric_columns_test(test_obj, column, median_value):
-    nan_indices = test_obj._features[test_obj._features[column].isna()].index.tolist()
-    test_obj.set_value(column, nan_indices, median_value)
+def find_columns_to_remove(train_obj, columns, nan_threshold):
+    if columns is None:
+        columns = train_obj._features.columns
+    nan_proportions = train_obj._features.isna().mean()
+    if nan_threshold is not None:
+        columns_to_remove = nan_proportions[nan_proportions > nan_threshold].index
+        columns_to_keep = nan_proportions[nan_proportions <= nan_threshold].index
+    else:
+        columns_to_remove = []
+        columns_to_keep = columns
+    return columns_to_keep, columns_to_remove, nan_proportions
+
+
+def set_nan_numeric_columns(data_obj, column, median_value):
+    nan_indices = data_obj._features[data_obj._features[column].isna()].index.tolist()
+    data_obj.set_value(column, nan_indices, median_value)
 
 
 def handle_nan_categorical_columns():
