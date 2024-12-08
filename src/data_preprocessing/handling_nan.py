@@ -45,7 +45,7 @@ def handle_nan_numeric_columns(train_obj: Data, test_obj: Data):
 
 
 def set_nan_numeric_columns(data_obj, column, median_value):
-    nan_indices = data_obj._features[data_obj._features[column].isna()].index.tolist()
+    nan_indices = data_obj._features[column].isna().index.tolist()
     data_obj.set_value(column, nan_indices, median_value)
 
 

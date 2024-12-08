@@ -22,8 +22,7 @@ class Data:
 
         if target_col_name is not None:
             self._target = self._df[target_col_name]
-            self._features = self._df.drop(target_col_name, axis=1)
-            self._features = self._df.drop(id_columns, axis=1)
+            self._features = self._df.drop([target_col_name] + id_columns, axis=1)
         else:
             self._target = None
             self._features = self._df.copy()
@@ -75,7 +74,7 @@ class Data:
         return columns_data_type
 
     def set_value(self, column_name, index, value):
-        self._features[column_name].loc[index] = value
+        self._features.loc[index, column_name] = value
 
     def load_data(self, name):
         dir_ = Data.dir_ + "/" + name
