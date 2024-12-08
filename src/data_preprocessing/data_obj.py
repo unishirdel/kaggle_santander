@@ -53,6 +53,8 @@ class Data:
 
     def remove_columns(self, col_names: list):
         self._features = self._features.drop(columns=col_names)
+        columns_data_type = self.get_columns_data_type()
+        self.set_attributes(columns_data_type)
 
     def get_class_samples(self):
         pos_samples = self._features[self._target == 1]

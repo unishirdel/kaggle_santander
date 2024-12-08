@@ -1,10 +1,13 @@
-def handle_zero_variance(train_obj, test_obj):
+from data_obj import Data
+
+
+def handle_zero_variance(train_obj: Data, test_obj: Data):
     remove_zero_variance_columns(train_obj, test_obj)
     no_var_feature_class_dic = store_class_zero_variance_cols(train_obj)
     return no_var_feature_class_dic
 
 
-def remove_zero_variance_columns(train_obj, test_obj):
+def remove_zero_variance_columns(train_obj: Data, test_obj: Data):
     no_variance_col = []
     for col_name in train_obj._features.columns:
         add_zero_variance_col(train_obj, no_variance_col, col_name)
